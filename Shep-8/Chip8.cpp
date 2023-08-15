@@ -48,7 +48,6 @@ Chip8::Chip8()
 
 Chip8::~Chip8(){}
 
-// TODO : Ugly
 void Chip8::tick() 
 {
     // Read instruction at pc
@@ -76,3 +75,175 @@ uint16_t Chip8::read(uint16_t addr)
 
     return (read_hi << 8) | read_lo;
 }
+
+#pragma region Opcodes implementation
+
+// Unimplemented
+void Chip8::SYS(uint16_t) {}
+
+void Chip8::CLS(uint16_t)
+{
+    // TODO
+}
+
+void Chip8::RET(uint16_t)
+{
+    pc = stack.top();
+    stack.pop();
+}
+
+void Chip8::JP_ADDR(uint16_t addr)
+{
+    pc = addr;
+}
+
+void Chip8::CALL(uint16_t addr)
+{
+    stack.push(pc);
+    pc = addr;
+}
+
+void Chip8::SE_BYTE(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t value = (params & 0x00FF);
+    pc += V[x] == value ? 2 : 0;
+}
+
+void Chip8::SNE_BYTE(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t value = (params & 0x00FF);
+    pc += V[x] != value ? 2 : 0;
+}
+
+void Chip8::SE_REG(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t y = (params & 0x00F0) >> 4;
+    pc += V[x] == V[y] ? 2 : 0;
+}
+
+void Chip8::LD_BYTE(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    V[x] = (params & 0x00FF);
+}
+
+void Chip8::ADD_BYTE(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    V[x] += (params & 0x00FF);
+}
+
+void Chip8::LD_REG(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t y = (params & 0x00F0) >> 4;
+    V[x] = V[y];
+}
+
+void Chip8::OR(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t y = (params & 0x00F0) >> 4;
+    V[x] |= V[y];
+}
+
+void Chip8::AND(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t y = (params & 0x00F0) >> 4;
+    V[x] &= V[y];
+}
+
+void Chip8::ADD_REG(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t y = (params & 0x00F0) >> 4;
+
+    uint16_t temp = V[x] + V[y];
+    V[0xF] = temp > 255 ? 1 : 0;
+
+    V[x] = temp & 0x00FF;
+}
+
+void Chip8::SUB_REG(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t y = (params & 0x00F0) >> 4;
+
+    V[0xF] = V[x] > V[y] ? 1 : 0;
+    V[x] -= V[y];
+}
+
+void Chip8::SHR(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+
+    V[0xF] = V[x] & 1; // Set flag if least-significant bit is 1
+    V[x] >> 1;
+}
+
+void Chip8::SUBN(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t y = (params & 0x00F0) >> 4;
+
+    V[0xF] = V[y] > V[x] ? 1 : 0;
+    V[y] -= V[x];
+}
+
+void Chip8::SHL(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+
+    V[0xF] = V[x] & 0x80; // Set flag if most-significant bit is 1
+    V[x] >> 1;
+}
+
+void Chip8::SNE_REG(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t y = (params & 0x00F0) >> 4;
+
+    pc += V[x] != V[y] ? 2 : 0;
+}
+
+void Chip8::LDI(uint16_t addr)
+{
+    I = addr;
+}
+
+void Chip8::JP_OFF(uint16_t addr)
+{
+    pc = addr + V[0];
+}
+
+void Chip8::RND(uint16_t params)
+{
+    uint8_t x = (params & 0x0F00) >> 8;
+    uint8_t value = (params & 0x00FF);
+
+    srand(time(NULL));
+    uint8_t temp = rand() % 256;
+
+    V[x] = temp & value;
+}
+
+void Chip8::DRW(uint16_t)
+{
+    // TODO
+}
+
+void Chip8::SKP(uint16_t)
+{
+    // TODO
+}
+
+void Chip8::SKNP(uint16_t)
+{
+    // TODO
+}
+
+#pragma endregion
