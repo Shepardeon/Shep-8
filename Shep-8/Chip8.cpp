@@ -53,27 +53,17 @@ void Chip8::tick()
 {
     // Read instruction at pc
     uint16_t opcode = read(pc);
-    uint16_t mask = (opcode & 0xFF00) > 0xD000 ? 0xF0FF : 0xFFFF;
+    uint8_t opcode_hi = (opcode & 0xFF00) >> 8;
+
+    uint16_t mask = opcode_hi > 0xD0 ? 0xF0FF
+        : opcode_hi == 0x50 || opcode_hi == 0x80 || opcode_hi == 0x90 ? 0xF00F
+        : 0xF000;
 
     auto i = lookup.find(opcode & mask);
     if (i != lookup.end())
         std::cout << "found instruction " << i->second.name << std::endl;
     else 
-    {
-        mask = 0xF00F;
-        i = lookup.find(opcode & mask);
-        if (i != lookup.end())
-            std::cout << "found instruction " << i->second.name << std::endl;
-        else
-        {
-            mask = 0xF000;
-            i = lookup.find(opcode & mask);
-            if (i != lookup.end())
-                std::cout << "found instruction " << i->second.name << std::endl;
-            else
-                std::cout << "couldn't find instruction " << (opcode & mask) << std::endl;
-        }
-    }
+        std::cout << "couldn't find instruction " << (opcode & mask) << std::endl;
 
     pc += 2;
 }
