@@ -16,8 +16,8 @@ public:
     uint8_t memory[4096]; // 4KB of RAM
 
     uint8_t V[16]; // General 8-bit registers V0-VF
-    uint16_t I;       // Special address register
-    uint8_t DT;       // Special delay register
+    uint16_t I;    // Special address register
+    uint8_t DT;    // Special delay register
     uint8_t ST;    // Special sound register
     uint16_t pc;   // program counter
     std::stack<uint16_t> stack; // stack & stack pointer
