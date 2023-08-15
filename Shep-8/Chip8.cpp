@@ -199,7 +199,7 @@ void Chip8::SHL(uint16_t params)
     uint8_t x = (params & 0x0F00) >> 8;
 
     V[0xF] = V[x] & 0x80; // Set flag if most-significant bit is 1
-    V[x] >> 1;
+    V[x] << 1;
 }
 
 void Chip8::SNE_REG(uint16_t params)
