@@ -57,6 +57,7 @@ void Chip8::tick()
 
     uint16_t mask = opcode_hi > 0xD0 ? 0xF0FF
         : opcode_hi == 0x50 || opcode_hi == 0x80 || opcode_hi == 0x90 ? 0xF00F
+        : opcode == 0x00E0 || opcode == 0x00EE ? 0xFFFF
         : 0xF000;
 
     auto i = lookup.find(opcode & mask);
