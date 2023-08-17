@@ -1,0 +1,18 @@
+// example chip-8 program which will multiply two
+// bytes stored at 0x300 and 0x301 and store the
+// resulting BCD representation at 0x305, 0x306 and 0x307
+
+0x300:
+05 06
+
+0x200:
+ld I, 0x300     (A3 00)
+ld V1, [I]	    (F1 65)
+ld V2, 0x00	    (62 00)
+ld V3, 0x01	    (62 01)
+add V2, V0	    (82 04)
+sub V1, V3	    (81 35)
+se V1, 0x00	    (31 00)
+jp 0x208	      (12 08)
+ld I, 0x305	    (A3 05)
+ld B, V2	      (F2 33)
