@@ -62,8 +62,9 @@ void Chip8::tick()
 {
     // Read instruction at pc
     uint16_t opcode = read(pc);
-    uint8_t opcode_hi = (opcode & 0xF000) >> 8;
+    pc += 2;
 
+    uint8_t opcode_hi = (opcode & 0xF000) >> 8;
     uint16_t mask = opcode_hi > 0xD0 ? 0xF0FF
         : opcode_hi == 0x50 || opcode_hi == 0x80 || opcode_hi == 0x90 ? 0xF00F
         : opcode == 0x00E0 || opcode == 0x00EE ? 0xFFFF
@@ -88,8 +89,6 @@ void Chip8::tick()
 
     if (DT > 0) DT--;
     if (ST > 0) ST--;
-
-    pc += 2;
 }
 
 uint16_t Chip8::read(uint16_t addr) 
@@ -290,9 +289,9 @@ void Chip8::LDF()
 
 void Chip8::LDB()
 {
-    uint8_t hundreds = nnn / 100;
-    uint8_t tens = (hundreds % 100) / 10;
-    uint8_t units = (tens % 10);
+    uint8_t hundreds = V[x] / 100;
+    uint8_t tens = (V[x] % 100) / 10;
+    uint8_t units = (V[x] % 10);
 
     write(I, hundreds);
     write(I + 1, tens);

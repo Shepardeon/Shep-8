@@ -36,9 +36,10 @@ namespace Shep8
             DrawString(x, y + 10, "PC: $" + hex(emu.pc, 4));
             DrawString(x, y + 20, "DT: $" + hex(emu.DT, 2));
             DrawString(x, y + 30, "ST: $" + hex(emu.ST, 2));
+            DrawString(x, y + 40, "I: $" + hex(emu.I, 4));
             for (int i = 0; i < sizeof(emu.V) / sizeof(emu.V[0]); i++)
             {
-                DrawString(x, y + i * 10 + 40, "V" + std::to_string(i) + ": $" + hex(emu.V[i], 2));
+                DrawString(x, y + i * 10 + 50, "V" + std::to_string(i) + ": $" + hex(emu.V[i], 2) + " (" + std::to_string(emu.V[i]) + ")");
             }
         }
 
@@ -50,7 +51,7 @@ namespace Shep8
             // resulting BCD representation at 0x305, 0x306 and 0x307
 
             0x300:
-            05 06
+            05 07
 
             0x200:
             ld I, 0x300    (A3 00)
@@ -60,13 +61,13 @@ namespace Shep8
             add V2, V0     (82 04)
             sub V1, V3     (81 35)
             se V1, 0x00    (31 00)
-            jp 0x206       (12 06)
+            jp 0x208       (12 08)
             ld I, 0x306    (A3 06)
             ld B, V2       (F2 33)
             */
 
             std::stringstream ss;
-            ss << "A3 00 F1 65 62 00 63 01 82 04 81 35 31 00 12 06 A3 06 F2 33";
+            ss << "A3 00 F1 65 62 00 63 01 82 04 81 35 31 00 12 08 A3 06 F2 33";
             uint16_t offset = 0x200;
             while (!ss.eof()) 
             {
@@ -77,7 +78,7 @@ namespace Shep8
 
             // set memory at number to multiply
             emu.memory[0x300] = 0x5;
-            emu.memory[0x301] = 0x6;
+            emu.memory[0x301] = 0x7;
 
             return true;
         }
