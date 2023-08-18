@@ -1,6 +1,16 @@
 #include "Chip8.h"
 #include <iostream>
 
+std::string hex(uint32_t n, uint8_t d)
+{
+    std::string s(d, '0');
+    for (int i = d - 1; i >= 0; i--, n >>= 4)
+    {
+        s[i] = "0123456789ABCDEF"[n & 0xF];
+    }
+    return s;
+}
+
 Chip8::Chip8()
 {
     // setup program counter at 0x0200
@@ -52,7 +62,7 @@ void Chip8::tick()
 {
     // Read instruction at pc
     uint16_t opcode = read(pc);
-    uint8_t opcode_hi = (opcode & 0xFF00) >> 8;
+    uint8_t opcode_hi = (opcode & 0xF000) >> 8;
 
     uint16_t mask = opcode_hi > 0xD0 ? 0xF0FF
         : opcode_hi == 0x50 || opcode_hi == 0x80 || opcode_hi == 0x90 ? 0xF00F
@@ -67,9 +77,17 @@ void Chip8::tick()
 
     auto i = lookup.find(opcode & mask);
     if (i != lookup.end())
-        std::cout << "found instruction " << i->second.name << std::endl;
-    else 
-        std::cout << "couldn't find instruction " << (opcode & mask) << std::endl;
+    {
+        (this->*lookup[opcode & mask].execute)();
+        std::cout << "found instruction " << i->second.name << " - " << hex(opcode, 4) << " / " << hex(opcode & mask, 4) << std::endl;
+    }
+    else
+    {
+        std::cout << "couldn't find instruction " << hex(opcode & mask, 4) << std::endl;
+    }
+
+    if (DT > 0) DT--;
+    if (ST > 0) ST--;
 
     pc += 2;
 }

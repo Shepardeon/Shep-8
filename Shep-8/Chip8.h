@@ -5,6 +5,8 @@
 #include <string>
 #include <map>
 
+std::string hex(uint32_t n, uint8_t d);
+
 class Chip8
 {
 public:
@@ -24,12 +26,15 @@ public:
 
     // Reads and execute one instruction from ram
     void tick();
+    uint16_t read(uint16_t addr);
+    uint8_t  readByte(uint16_t addr);
+    void write(uint16_t addr, uint8_t data);
 
 private:
     struct INSTRUCTION 
     {
         std::string name;
-        void (Chip8::* execute)() = nullptr;
+        void (Chip8::* execute)(void) = nullptr;
     };
     std::map<uint16_t, INSTRUCTION> lookup;
 
@@ -39,10 +44,6 @@ private:
     uint8_t    x;   // the lower 4 bits of the high byte of the current instruction
     uint8_t    y;   // the upper 4 bits of the low byte of the current instruction
     uint8_t   kk;   // the lowest 8 bits of the current instruction
-
-    uint16_t read(uint16_t addr);
-    uint8_t  readByte(uint16_t addr);
-    void write(uint16_t addr, uint8_t data);
 
     // OpCodes
     void SYS();     void CLS();         void RET();     void JP_ADDR();     void CALL();
